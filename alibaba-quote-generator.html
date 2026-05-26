@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Alibaba Quote Message Generator — SHIPPAY</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #f5f2eb;
+    --surface: #ffffff;
+    --surface2: #efefea;
+    --accent: #c84b2f;
+    --accent2: #1a3a2a;
+    --text: #1a1a18;
+    --muted: #7a7a72;
+    --border: #d8d4c8;
+    --mono: 'DM Mono', monospace;
+    --sans: 'Syne', sans-serif;
+  }
+
+  body {
+    font-family: var(--sans);
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 2rem 1rem 4rem;
+  }
+
+  .container {
+    max-width: 780px;
+    margin: 0 auto;
+  }
+
+  header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-bottom: 2.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1.5px solid var(--text);
+  }
+
+  .logo {
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  h1 {
+    font-size: clamp(22px, 4vw, 32px);
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+  }
+
+  h1 span {
+    color: var(--accent);
+  }
+
+  .subtitle {
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: 6px;
+    font-weight: 400;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+  }
+
+  @media (max-width: 600px) {
+    .grid { grid-template-columns: 1fr; }
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.25rem;
+  }
+
+  .card.full { grid-column: 1 / -1; }
+
+  .card-label {
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    font-weight: 600;
+    color: var(--muted);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .card-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  label {
+    display: block;
+    font-size: 11px;
+    color: var(--muted);
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    margin-bottom: 5px;
+  }
+
+  input[type="text"],
+  input[type="number"] {
+    width: 100%;
+    padding: 9px 12px;
+    font-family: var(--sans);
+    font-size: 14px;
+    font-weight: 500;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.15s;
+  }
+
+  input:focus { border-color: var(--accent); }
+
+  .field { margin-bottom: 14px; }
+  .field:last-child { margin-bottom: 0; }
+
+  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+  .items-header {
+    display: grid;
+    grid-template-columns: 3fr 1fr 1fr 28px;
+    gap: 8px;
+    margin-bottom: 6px;
+  }
+
+  .items-header span {
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 600;
+  }
+
+  .item-row {
+    display: grid;
+    grid-template-columns: 3fr 1fr 1fr 28px;
+    gap: 8px;
+    margin-bottom: 8px;
+    align-items: center;
+  }
+
+  .remove-btn {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--muted);
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    transition: all 0.15s;
+  }
+
+  .remove-btn:hover { background: #fee; border-color: var(--accent); color: var(--accent); }
+
+  .add-btn {
+    width: 100%;
+    margin-top: 8px;
+    padding: 8px;
+    background: transparent;
+    border: 1.5px dashed var(--border);
+    border-radius: 8px;
+    font-family: var(--sans);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .add-btn:hover { border-color: var(--accent); color: var(--accent); background: #fdf6f4; }
+
+  .preview-card {
+    background: var(--accent2);
+    border: none;
+    border-radius: 12px;
+    padding: 1.5rem;
+    grid-column: 1 / -1;
+    position: relative;
+  }
+
+  .preview-card .card-label {
+    color: #a8c4b0;
+  }
+
+  .preview-card .card-label::after {
+    background: #2d5040;
+  }
+
+  .preview-badge {
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-weight: 600;
+    background: rgba(255,255,255,0.12);
+    color: #c8e0cf;
+    padding: 3px 10px;
+    border-radius: 100px;
+    margin-bottom: 14px;
+    display: inline-block;
+  }
+
+  #preview-text {
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.8;
+    color: #e8f5ec;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+
+  .copy-btn {
+    margin-top: 16px;
+    padding: 10px 24px;
+    background: var(--accent);
+    border: none;
+    border-radius: 8px;
+    font-family: var(--sans);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    color: #fff;
+    cursor: pointer;
+    transition: all 0.15s;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .copy-btn:hover { background: #a83a20; transform: translateY(-1px); }
+  .copy-btn:active { transform: translateY(0); }
+
+  .total-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 12px;
+    padding: 10px 14px;
+    background: var(--surface2);
+    border-radius: 8px;
+    font-size: 13px;
+    border: 1px solid var(--border);
+  }
+
+  .total-bar .total-label { color: var(--muted); font-weight: 500; }
+  .total-bar .total-amount { font-weight: 700; font-size: 16px; color: var(--accent2); }
+
+  footer {
+    text-align: center;
+    margin-top: 3rem;
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.05em;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <div class="logo">SHIPPAY · Quote Tool</div>
+    <div>
+      <h1>Alibaba Message <span>Generator</span></h1>
+      <p class="subtitle">No PDF needed — paste inline, get more replies</p>
+    </div>
+  </header>
+
+  <div class="grid">
+
+    <!-- Customer -->
+    <div class="card">
+      <div class="card-label">Customer</div>
+      <div class="field">
+        <label>Name</label>
+        <input type="text" id="customerName" placeholder="e.g. Nesrin" oninput="update()">
+      </div>
+      <div class="field">
+        <label>Destination country</label>
+        <input type="text" id="destination" placeholder="e.g. Germany" oninput="update()">
+      </div>
+    </div>
+
+    <!-- Shipping & Terms -->
+    <div class="card">
+      <div class="card-label">Shipping & Terms</div>
+      <div class="field">
+        <div class="row">
+          <div>
+            <label>Shipping cost ($)</label>
+            <input type="number" id="shippingCost" placeholder="58" step="0.01" oninput="update()">
+          </div>
+          <div>
+            <label>Delivery time</label>
+            <input type="text" id="shippingDays" value="6–12 days" oninput="update()">
+          </div>
+        </div>
+      </div>
+      <div class="field">
+        <div class="row">
+          <div>
+            <label>Production time</label>
+            <input type="text" id="productionTime" value="4 weeks" oninput="update()">
+          </div>
+          <div>
+            <label>Quote valid for</label>
+            <input type="text" id="validDays" value="15 days" oninput="update()">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Items -->
+    <div class="card full">
+      <div class="card-label">Items</div>
+      <div class="items-header">
+        <span>Item name</span>
+        <span>Qty</span>
+        <span>Unit price</span>
+        <span></span>
+      </div>
+      <div id="items-container">
+        <div class="item-row">
+          <input type="text" placeholder="e.g. Aker Fassi Clay Pot" oninput="update()">
+          <input type="number" placeholder="10" min="1" oninput="update()">
+          <input type="number" placeholder="2.20" step="0.01" oninput="update()">
+          <button class="remove-btn" onclick="removeItem(this)" title="Remove">×</button>
+        </div>
+      </div>
+      <button class="add-btn" onclick="addItem()">+ Add item</button>
+
+      <div class="total-bar">
+        <span class="total-label">Estimated total</span>
+        <span class="total-amount" id="total-display">$—</span>
+      </div>
+    </div>
+
+    <!-- Preview -->
+    <div class="preview-card">
+      <div class="card-label">Message preview</div>
+      <div class="preview-badge">📱 Mobile-friendly · No attachment needed</div>
+      <div id="preview-text">Fill in the fields above to generate your message.</div>
+      <button class="copy-btn" onclick="copyMsg()">
+        <span id="copy-icon">⎘</span> Copy message
+      </button>
+    </div>
+
+  </div>
+
+  <footer>Built for SHIPPAY · Agdal, Rabat</footer>
+</div>
+
+<script>
+function getItems() {
+  const rows = document.querySelectorAll('#items-container .item-row');
+  return Array.from(rows).map(row => {
+    const inputs = row.querySelectorAll('input');
+    const name = inputs[0].value.trim();
+    const qty = parseFloat(inputs[1].value);
+    const price = parseFloat(inputs[2].value);
+    return { name, qty: isNaN(qty) ? null : qty, price: isNaN(price) ? null : price };
+  }).filter(it => it.name);
+}
+
+function update() {
+  const name = document.getElementById('customerName').value.trim() || '[Customer]';
+  const dest = document.getElementById('destination').value.trim() || '[Country]';
+  const shipping = parseFloat(document.getElementById('shippingCost').value);
+  const days = document.getElementById('shippingDays').value.trim() || '?';
+  const prod = document.getElementById('productionTime').value.trim() || '~1 week';
+  const valid = document.getElementById('validDays').value.trim() || '15 days';
+
+  const items = getItems();
+  let subtotal = 0;
+
+  items.forEach(it => {
+    const lineTotal = (it.qty !== null && it.price !== null) ? it.qty * it.price : null;
+    if (lineTotal !== null) subtotal += lineTotal;
+  });
+
+  const shippingCost = !isNaN(shipping) ? shipping : null;
+  const grandTotal = shippingCost !== null ? (subtotal + shippingCost).toFixed(2) : '?';
+  const shippingLine = shippingCost !== null ? '$' + shippingCost.toFixed(2) : '$?';
+
+  document.getElementById('total-display').textContent = grandTotal !== '?' ? '$' + grandTotal : '$—';
+
+  const inlineItems = items.length
+    ? items.map(it => {
+        const lineTotal = (it.qty !== null && it.price !== null) ? (it.qty * it.price).toFixed(2) : '?';
+        const priceStr = it.price !== null ? '$' + it.price.toFixed(2) + '/unit' : '$?/unit';
+        const qtyStr = it.qty !== null ? it.qty + 'x' : '?x';
+        return `✅ ${qtyStr} ${it.name} — ${priceStr} → $${lineTotal}`;
+      }).join('\n')
+    : '(no items yet)';
+
+  const plainMsg = `Hi ${name}! Here's your quote for ${dest}:\n${inlineItems}\n🚚 Shipping — ${shippingLine} (Air Express, ${days})\n💰 Total: $${grandTotal}\n⏱ Production: ${prod} after payment\n📅 Valid for ${valid}\n💳 PayPal (+5%) or wire transfer.\nAny questions? Just reply here! — SHIPPAY +212 604 30 30 36`;
+
+  document.getElementById('preview-text').textContent = plainMsg;
+}
+
+function addItem() {
+  const container = document.getElementById('items-container');
+  const div = document.createElement('div');
+  div.className = 'item-row';
+  div.innerHTML = `
+    <input type="text" placeholder="Item name" oninput="update()">
+    <input type="number" placeholder="1" min="1" oninput="update()">
+    <input type="number" placeholder="0.00" step="0.01" oninput="update()">
+    <button class="remove-btn" onclick="removeItem(this)" title="Remove">×</button>
+  `;
+  container.appendChild(div);
+  div.querySelector('input').focus();
+}
+
+function removeItem(btn) {
+  const rows = document.querySelectorAll('#items-container .item-row');
+  if (rows.length <= 1) return;
+  btn.closest('.item-row').remove();
+  update();
+}
+
+function copyMsg() {
+  const plain = document.getElementById('preview-text').textContent;
+  const html = plain.split('\n').map(l => `<div>${l || '<br>'}</div>`).join('');
+  const btn = document.querySelector('.copy-btn');
+
+  const tryHtmlCopy = () => {
+    if (window.ClipboardItem && navigator.clipboard && navigator.clipboard.write) {
+      const item = new ClipboardItem({
+        'text/html': new Blob([html], { type: 'text/html' }),
+        'text/plain': new Blob([plain], { type: 'text/plain' })
+      });
+      return navigator.clipboard.write([item]);
+    }
+    return Promise.reject('no ClipboardItem');
+  };
+
+  const tryFallback = () => {
+    const div = document.createElement('div');
+    div.innerHTML = html;
+    div.style.cssText = 'position:fixed;top:-9999px;left:-9999px;opacity:0;';
+    document.body.appendChild(div);
+    const sel = window.getSelection();
+    const range = document.createRange();
+    range.selectNodeContents(div);
+    sel.removeAllRanges();
+    sel.addRange(range);
+    const ok = document.execCommand('copy');
+    sel.removeAllRanges();
+    document.body.removeChild(div);
+    return ok ? Promise.resolve() : Promise.reject();
+  };
+
+  tryHtmlCopy()
+    .catch(tryFallback)
+    .then(() => {
+      btn.innerHTML = '✓ Copied!';
+      setTimeout(() => { btn.innerHTML = '<span>⎘</span> Copy message'; }, 2000);
+    })
+    .catch(() => {
+      btn.innerHTML = '⚠ Try Ctrl+C manually';
+      setTimeout(() => { btn.innerHTML = '<span>⎘</span> Copy message'; }, 3000);
+    });
+}
+
+update();
+</script>
+</body>
+</html>
